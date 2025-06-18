@@ -17,7 +17,8 @@ The folder structure outlined in the Thai documentation shows the key modules of
 - `logger.py` – handle logging and export (CSV/JSON).
 - `image_saver.py` – save captured images or placeholder logs with timestamped
   filenames.
-- `config/config.json` – runtime configuration loaded by `ConfigManager`.
+- `config/config.json` – runtime configuration loaded by `ConfigManager`. It now
+  contains a `cameras` array so multiple cameras can be configured.
 - The configuration's `model_name` is automatically updated from the serial number.
 
 ## Setup and Usage
@@ -31,6 +32,6 @@ The folder structure outlined in the Thai documentation shows the key modules of
 The `CameraManager` automatically connects to the correct camera type based on
 `config.json`. It supports:
 * **USB** – uses OpenCV to access a webcam.
-* **IV2/IV4** – connects over a mock TCP socket and sends `TRIGGER`/`IMAGE_OK` commands.
+* **IV2/IV3/IV4** – connects over a mock TCP socket and sends `TRIGGER`/`IMAGE_OK` commands.
 * **VS** – simulates an SDK interface and returns a mocked image string.
 
