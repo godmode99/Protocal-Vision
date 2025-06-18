@@ -34,7 +34,8 @@ class App:
 
         # load configuration
         self.config = ConfigManager(CONFIG_PATH)
-        self.camera: CameraManager | None = None
+        self.camera_mgr = CameraManager(self.config.get("cameras"))
+        self.status_vars: dict[str, tk.StringVar] = {}
 
         # labels displaying current state
         self.serial_var = tk.StringVar(value=self.config.get("serial_number"))
@@ -50,14 +51,22 @@ class App:
         tk.Label(root, text="Last image:").grid(row=2, column=0, sticky="w")
         tk.Label(root, textvariable=self.image_var).grid(row=2, column=1, sticky="w")
 
-        tk.Button(root, text="Connect Camera", command=self.connect_camera).grid(
-            row=3, column=0, padx=5, pady=5, sticky="ew"
-        )
-        tk.Button(root, text="Capture Image", command=self.capture_image).grid(
-            row=3, column=1, padx=5, pady=5, sticky="ew"
-        )
+        row = 3
+        for cam in self.config.get("cameras"):
+            name = cam["name"]
+            var = tk.StringVar(value="disconnected")
+            self.status_vars[name] = var
+            tk.Label(root, text=name).grid(row=row, column=0, sticky="w")
+            tk.Label(root, textvariable=var).grid(row=row, column=1, sticky="w")
+            tk.Button(root, text="Connect", command=lambda n=name: self.connect_camera(n)).grid(
+                row=row, column=2, padx=5, pady=5, sticky="ew"
+            )
+            tk.Button(root, text="Capture", command=lambda n=name: self.capture_image(n)).grid(
+                row=row, column=3, padx=5, pady=5, sticky="ew"
+            )
+            row += 1
         tk.Button(root, text="Select Model", command=self.select_model).grid(
-            row=3, column=2, padx=5, pady=5, sticky="ew"
+            row=row, column=0, columnspan=4, padx=5, pady=5, sticky="ew"
         )
 
         root.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -65,41 +74,27 @@ class App:
     # ------------------------------------------------------------------
     # UI actions
     # ------------------------------------------------------------------
-    def connect_camera(self) -> None:
-        """(Re)connect the camera using the current configuration."""
+    def connect_camera(self, name: str) -> None:
+        """Connect an individual camera."""
         try:
-            self.config = ConfigManager(CONFIG_PATH)
-            self.camera = CameraManager(self.config.data)
-
-            # update labels
-            self.serial_var.set(self.config.get("serial_number"))
-            self.model_var.set(self.config.get("model_name"))
-
-            # ensure image saver uses up-to-date configuration
-            import ProtocolVisionIV4.image_saver as image_saver
-
-            image_saver._SERIAL = self.config.get("serial_number")
-            image_saver._CAMERA_TYPE = self.config.get("camera_type")
-
-            messagebox.showinfo("Camera", "Camera connected")
+            self.camera_mgr.connect(name)
+            self.status_vars[name].set("connected")
+            messagebox.showinfo("Camera", f"{name} connected")
         except (CameraError, Exception) as exc:  # pragma: no cover - UI feedback
             messagebox.showerror("Connection failed", str(exc))
 
-    def capture_image(self) -> None:
-        """Capture an image using the connected camera."""
-        if self.camera is None:
-            messagebox.showwarning("Capture", "Camera not connected")
-            return
+    def capture_image(self, name: str) -> None:
+        """Capture an image using the specified camera."""
         try:
-            img = self.camera.capture_image()
+            img = self.camera_mgr.capture_image(name)
             path = save_captured_image(
                 img,
                 self.config.get("image_output_path"),
                 serial=self.config.get("serial_number"),
-                camera_type=self.config.get("camera_type"),
+                camera_type=self.camera_mgr.cameras[name].camera_type,
             )
             self.image_var.set(path)
-            messagebox.showinfo("Capture", f"Image saved to {path}")
+            messagebox.showinfo("Capture", f"{name} image saved to {path}")
         except Exception as exc:  # pragma: no cover - UI feedback
             messagebox.showerror("Capture failed", str(exc))
 
@@ -125,8 +120,7 @@ class App:
             messagebox.showinfo("Model", f"Selected model: {model}")
 
     def on_close(self) -> None:
-        if self.camera is not None:
-            self.camera.release()
+        self.camera_mgr.release_all()
         self.root.destroy()
 
 

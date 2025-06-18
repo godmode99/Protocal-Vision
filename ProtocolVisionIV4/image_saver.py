@@ -18,7 +18,7 @@ from .config_manager import ConfigManager
 _CONFIG_PATH = Path(__file__).resolve().parent / "config" / "config.json"
 _config = ConfigManager(_CONFIG_PATH)
 _SERIAL = _config.get("serial_number", "UNKNOWN")
-_CAMERA_TYPE = _config.get("camera_type", "USB")
+_CAMERA_TYPE = "USB"
 
 
 def save_captured_image(

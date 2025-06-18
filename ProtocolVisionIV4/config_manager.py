@@ -16,19 +16,24 @@ class ConfigError(Exception):
 class ConfigManager:
     """Load and validate configuration settings."""
 
-    ALLOWED_CAMERA_TYPES = {"USB", "IV2", "IV4", "VS"}
+    ALLOWED_CAMERA_TYPES = {"USB", "IV2", "IV3", "IV4", "VS"}
 
     REQUIRED_FIELDS = {
-        "camera_type": str,
         "model_name": str,
         "serial_number": str,
         "image_output_path": str,
         "ai_model_path": str,
-        "port": int,
         "log_path": str,
+        "cameras": list,
     }
 
-    OPTIONAL_FIELDS = {
+    CAMERA_REQUIRED_FIELDS = {
+        "name": str,
+        "camera_type": str,
+        "port": int,
+    }
+
+    CAMERA_OPTIONAL_FIELDS = {
         "ip_address": str,
     }
 
@@ -59,16 +64,25 @@ class ConfigManager:
                     f"Field '{field}' must be of type {field_type.__name__}"
                 )
 
-        camera_type = self.data.get("camera_type")
-        if camera_type not in self.ALLOWED_CAMERA_TYPES:
-            raise ConfigError(
-                f"Invalid camera_type '{camera_type}'. Allowed types: {sorted(self.ALLOWED_CAMERA_TYPES)}"
-            )
+        cameras = self.data.get("cameras", [])
+        if not isinstance(cameras, list):
+            raise ConfigError("Field 'cameras' must be a list")
 
-        if "ip_address" in self.data and not isinstance(
-            self.data["ip_address"], str
-        ):
-            raise ConfigError("Field 'ip_address' must be of type str")
+        for cam in cameras:
+            for field, field_type in self.CAMERA_REQUIRED_FIELDS.items():
+                if field not in cam:
+                    raise ConfigError(f"Missing required camera field: {field}")
+                if not isinstance(cam[field], field_type):
+                    raise ConfigError(
+                        f"Camera field '{field}' must be of type {field_type.__name__}"
+                    )
+            cam_type = cam.get("camera_type")
+            if cam_type not in self.ALLOWED_CAMERA_TYPES:
+                raise ConfigError(
+                    f"Invalid camera_type '{cam_type}'. Allowed types: {sorted(self.ALLOWED_CAMERA_TYPES)}"
+                )
+            if "ip_address" in cam and not isinstance(cam["ip_address"], str):
+                raise ConfigError("Camera field 'ip_address' must be of type str")
 
     def get(self, key: str, default: Any | None = None) -> Any:
         """Convenience accessor for configuration values."""

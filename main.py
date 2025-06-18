@@ -29,8 +29,9 @@ def main() -> None:
     file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
     logging.getLogger().addHandler(file_handler)
 
-    logging.info("Initializing camera (%s)", config.get("camera_type"))
-    camera = CameraManager(config.data)
+    cameras_cfg = config.get("cameras")
+    logging.info("Initializing %d cameras", len(cameras_cfg))
+    camera_mgr = CameraManager(cameras_cfg)
 
     serial = config.get("serial_number")
     logging.info("Selecting model for serial %s", serial)
@@ -38,20 +39,22 @@ def main() -> None:
     config.data["model_name"] = model
     logging.info("Selected model: %s", model)
 
-    logging.info("Capturing image")
-    image = camera.capture_image()
+    for name in camera_mgr.names():
+        logging.info("Connecting camera %s", name)
+        camera_mgr.connect(name)
+        logging.info("Capturing image from %s", name)
+        image = camera_mgr.capture_image(name)
 
-    logging.info("Saving image")
-    image_path = save_captured_image(
-        image,
-        config.get("image_output_path"),
-        serial=serial,
-        camera_type=config.get("camera_type"),
-    )
-    logging.info("Image saved to %s", image_path)
-
-    camera.release()
-    logging.info("Camera released")
+        logging.info("Saving image")
+        image_path = save_captured_image(
+            image,
+            config.get("image_output_path"),
+            serial=serial,
+            camera_type=camera_mgr.cameras[name].camera_type,
+        )
+        logging.info("Image from %s saved to %s", name, image_path)
+        camera_mgr.release(name)
+        logging.info("Camera %s released", name)
 
 
 if __name__ == "__main__":

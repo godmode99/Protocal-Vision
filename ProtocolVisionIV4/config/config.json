@@ -1,10 +1,21 @@
 {
-  "camera_type": "USB",
   "model_name": "default_model",
   "serial_number": "0000",
   "image_output_path": "outputs/images",
   "ai_model_path": "models/model.onnx",
-  "port": 8000,
-  "ip_address": "127.0.0.1",
-  "log_path": "outputs/logs/app.log"
+  "log_path": "outputs/logs/app.log",
+  "cameras": [
+    {
+      "name": "Cam1",
+      "camera_type": "USB",
+      "port": 0,
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "name": "Cam2",
+      "camera_type": "IV3",
+      "port": 8000,
+      "ip_address": "192.168.0.100"
+    }
+  ]
 }
