@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any, Dict
 
+from .model_selector import select_model_by_serial
+
 
 class ConfigError(Exception):
     """Custom exception for configuration issues."""
@@ -35,6 +37,9 @@ class ConfigManager:
         self.data: Dict[str, Any] = {}
         self._load()
         self._validate()
+        self.data["model_name"] = select_model_by_serial(
+            self.data.get("serial_number", "")
+        )
 
     def _load(self) -> None:
         try:

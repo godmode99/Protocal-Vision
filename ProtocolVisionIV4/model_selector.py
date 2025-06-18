@@ -6,11 +6,11 @@ from typing import Dict
 
 
 MODEL_MAP: Dict[str, str] = {
-    "A": "model_a.onnx",
-    "B": "model_b.onnx",
+    "IV4-001": "model_abc",
+    "VS-888": "model_xyz",
 }
 
-DEFAULT_MODEL = "default_model.onnx"
+DEFAULT_MODEL = "default_model"
 
 class ModelSelector:
     """Select a model based on the provided serial code."""
@@ -24,8 +24,7 @@ def select_model_by_serial(serial: str) -> str:
     """Return the model name mapped from a serial number."""
     if not serial:
         return DEFAULT_MODEL
-    prefix = serial[0].upper()
-    return MODEL_MAP.get(prefix, DEFAULT_MODEL)
+    return MODEL_MAP.get(serial, DEFAULT_MODEL)
 
 
 __all__ = ["ModelSelector", "select_model_by_serial"]
