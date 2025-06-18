@@ -12,6 +12,7 @@ except Exception:  # pragma: no cover - optional dependency
     cv2 = None
 
 from .config_manager import ConfigManager
+from .ai_processor import AIProcessor
 
 # Load configuration once for default serial number and camera type. These
 # values can be overridden when calling :func:`save_captured_image`.
@@ -19,6 +20,7 @@ _CONFIG_PATH = Path(__file__).resolve().parent / "config" / "config.json"
 _config = ConfigManager(_CONFIG_PATH)
 _SERIAL = _config.get("serial_number", "UNKNOWN")
 _CAMERA_TYPE = "USB"
+_AI_PROCESSOR: AIProcessor | None = None
 
 
 def save_captured_image(
@@ -58,17 +60,29 @@ def save_captured_image(
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     serial = serial or _SERIAL
     camera_type = camera_type or _CAMERA_TYPE
-    status = "OK" if ok else "NG"
-    base_name = f"{serial}_{status}_{timestamp}"
     out_dir = Path(output_path)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     if camera_type == "USB" and cv2 is not None:
-        file_path = out_dir / f"{base_name}.jpg"
-        cv2.imwrite(str(file_path), image)
+        use_ai = _config.get("use_ai", False)
+        if use_ai:
+            global _AI_PROCESSOR
+            if _AI_PROCESSOR is None:
+                _AI_PROCESSOR = AIProcessor(_config.get("ai_model_path"))
+            temp_path = out_dir / f"{serial}_TMP_{timestamp}.jpg"
+            cv2.imwrite(str(temp_path), image)
+            ok = _AI_PROCESSOR.process_image(str(temp_path))
+            status = "OK" if ok else "NG"
+            file_path = out_dir / f"{serial}_{status}_{timestamp}.jpg"
+            temp_path.rename(file_path)
+        else:
+            status = "OK" if ok else "NG"
+            file_path = out_dir / f"{serial}_{status}_{timestamp}.jpg"
+            cv2.imwrite(str(file_path), image)
     else:
+        status = "OK" if ok else "NG"
         # For mocked systems create a dummy text file for now
-        file_path = out_dir / f"{base_name}.txt"
+        file_path = out_dir / f"{serial}_{status}_{timestamp}.txt"
         with file_path.open("w", encoding="utf-8") as f:
             f.write(f"Mock image captured from {camera_type} at {timestamp}\n")
 

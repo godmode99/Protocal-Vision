@@ -3,6 +3,7 @@
   "serial_number": "0000",
   "image_output_path": "outputs/images",
   "ai_model_path": "models/model.onnx",
+  "use_ai": false,
   "log_path": "outputs/logs/app.log",
   "scanner_port": "COM3",
   "scanner_baud": 9600,
