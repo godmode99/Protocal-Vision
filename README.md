@@ -23,3 +23,11 @@ The folder structure outlined in the Thai documentation shows the key modules of
 3. Run `python ProtocolVisionIV4/main.py` to launch the application.
 4. Captured images and logs will be saved in the `outputs/` directory.
 
+## Camera Manager Overview
+
+The `CameraManager` automatically connects to the correct camera type based on
+`config.json`. It supports:
+* **USB** – uses OpenCV to access a webcam.
+* **IV2/IV4** – connects over a mock TCP socket and sends `TRIGGER`/`IMAGE_OK` commands.
+* **VS** – simulates an SDK interface and returns a mocked image string.
+
