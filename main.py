@@ -1,24 +1,34 @@
 import argparse
 import logging
+import os
 from pathlib import Path
 
-from ProtocolVisionIV4.camera_manager import CameraManager
-from ProtocolVisionIV4.config_manager import ConfigManager
-from ProtocolVisionIV4.image_saver import save_captured_image
-from ProtocolVisionIV4.model_selector import ModelSelector
-from ProtocolVisionIV4.logger import Logger
-from ProtocolVisionIV4.workflow import send_to_workflow
 
-CONFIG_PATH = Path(__file__).resolve().parent / "ProtocolVisionIV4" / "config" / "config.json"
+DEFAULT_CONFIG = Path(__file__).resolve().parent / "ProtocolVisionIV4" / "config" / "config.json"
+CONFIG_PATH = Path(os.environ.get("CONFIG_PATH", DEFAULT_CONFIG))
 
 
 def main() -> None:
     """Run a simple CLI capture workflow."""
+    global CONFIG_PATH
     parser = argparse.ArgumentParser(description="Protocol Vision IV4 CLI")
     parser.add_argument(
         "--debug", action="store_true", help="Enable verbose logging"
     )
+    parser.add_argument(
+        "--config", default=str(CONFIG_PATH), help="Path to configuration file"
+    )
     args = parser.parse_args()
+
+    CONFIG_PATH = Path(args.config)
+    os.environ["CONFIG_PATH"] = str(CONFIG_PATH)
+
+    from ProtocolVisionIV4.camera_manager import CameraManager
+    from ProtocolVisionIV4.config_manager import ConfigManager
+    from ProtocolVisionIV4.image_saver import save_captured_image
+    from ProtocolVisionIV4.model_selector import ModelSelector
+    from ProtocolVisionIV4.logger import Logger
+    from ProtocolVisionIV4.workflow import send_to_workflow
 
     log_level = logging.DEBUG if args.debug else logging.INFO
     logging.basicConfig(level=log_level, format="%(asctime)s - %(levelname)s - %(message)s")

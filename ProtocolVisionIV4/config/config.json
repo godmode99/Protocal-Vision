@@ -5,6 +5,7 @@
   "ai_model_path": "models/model.onnx",
   "use_ai": false,
   "log_path": "outputs/logs/app.log",
+  "model_registry_path": "outputs/model_registry.db",
   "scanner_port": "COM3",
   "scanner_baud": 9600,
   "webhook_url": "",

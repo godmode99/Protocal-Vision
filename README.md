@@ -20,6 +20,7 @@ The folder structure outlined in the Thai documentation shows the key modules of
   mock cameras.
 - `config/config.json` – runtime configuration loaded by `ConfigManager`. It now
   contains a `cameras` array so multiple cameras can be configured.
+- The file also defines `model_registry_path`, which stores the selection history.
 - The configuration's `model_name` is automatically updated from the serial number.
 - Set `use_ai` to `true` in `config.json` to enable YOLOv5 inspection with
 `ai_processor.process_image`.
@@ -43,6 +44,8 @@ Each capture result is logged and then sent via `send_to_workflow`, which posts 
 3. Install dependencies with `pip install -r requirements.txt`.
 4. Run `python ProtocolVisionIV4/main.py` to launch the application.
 5. Captured images and logs will be saved in the `outputs/` directory.
+6. Set the `CONFIG_PATH` environment variable or pass `--config <file>` to
+   override the configuration file location.
 
 ## Camera Manager Overview
 

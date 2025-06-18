@@ -25,6 +25,7 @@ class ConfigManager:
         "ai_model_path": str,
         "use_ai": bool,
         "log_path": str,
+        "model_registry_path": str,
         "scanner_port": str,
         "scanner_baud": int,
         "webhook_url": str,
