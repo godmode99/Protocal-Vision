@@ -13,14 +13,21 @@ except Exception:  # pragma: no cover - optional dependency
 
 from .config_manager import ConfigManager
 
-# Load configuration once for serial number and camera type
+# Load configuration once for default serial number and camera type. These
+# values can be overridden when calling :func:`save_captured_image`.
 _CONFIG_PATH = Path(__file__).resolve().parent / "config" / "config.json"
 _config = ConfigManager(_CONFIG_PATH)
 _SERIAL = _config.get("serial_number", "UNKNOWN")
 _CAMERA_TYPE = _config.get("camera_type", "USB")
 
 
-def save_captured_image(image: Any, output_path: str) -> str:
+def save_captured_image(
+    image: Any,
+    output_path: str,
+    *,
+    serial: str | None = None,
+    camera_type: str | None = None,
+) -> str:
     """Save a captured image or placeholder file.
 
     The file name uses the configured serial number and the current timestamp in
@@ -34,6 +41,10 @@ def save_captured_image(image: Any, output_path: str) -> str:
         Image data from :class:`CameraManager.capture_image`.
     output_path:
         Directory where the file should be saved.
+    serial:
+        Override the serial number used in the file name.
+    camera_type:
+        Override the camera type used when saving.
 
     Returns
     -------
@@ -42,18 +53,20 @@ def save_captured_image(image: Any, output_path: str) -> str:
     """
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-    base_name = f"{_SERIAL}_{timestamp}"
+    serial = serial or _SERIAL
+    camera_type = camera_type or _CAMERA_TYPE
+    base_name = f"{serial}_{timestamp}"
     out_dir = Path(output_path)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    if _CAMERA_TYPE == "USB" and cv2 is not None:
+    if camera_type == "USB" and cv2 is not None:
         file_path = out_dir / f"{base_name}.jpg"
         cv2.imwrite(str(file_path), image)
     else:
         # For mocked systems create a dummy text file for now
         file_path = out_dir / f"{base_name}.txt"
         with file_path.open("w", encoding="utf-8") as f:
-            f.write(f"Mock image captured from {_CAMERA_TYPE} at {timestamp}\n")
+            f.write(f"Mock image captured from {camera_type} at {timestamp}\n")
 
     return str(file_path)
 
