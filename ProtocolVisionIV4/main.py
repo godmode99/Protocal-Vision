@@ -19,7 +19,7 @@ from tkinter import messagebox, simpledialog
 from ProtocolVisionIV4.camera_manager import CameraManager, CameraError
 from ProtocolVisionIV4.config_manager import ConfigManager
 from ProtocolVisionIV4.image_saver import save_captured_image
-from ProtocolVisionIV4.model_selector import select_model_by_serial
+from ProtocolVisionIV4.model_selector import ModelSelector
 
 
 CONFIG_PATH = Path(__file__).resolve().parent / "config" / "config.json"
@@ -104,7 +104,9 @@ class App:
             "Serial", "Enter serial number:", parent=self.root
         )
         if serial:
-            model = select_model_by_serial(serial)
+            selector = ModelSelector()
+            model = selector.select_model(serial)
+            selector.register_model(serial, model)
             self.config.data["serial_number"] = serial
             self.config.data["model_name"] = model
             self.serial_var.set(serial)

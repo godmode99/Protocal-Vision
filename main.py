@@ -5,7 +5,7 @@ from pathlib import Path
 from ProtocolVisionIV4.camera_manager import CameraManager
 from ProtocolVisionIV4.config_manager import ConfigManager
 from ProtocolVisionIV4.image_saver import save_captured_image
-from ProtocolVisionIV4.model_selector import select_model_by_serial
+from ProtocolVisionIV4.model_selector import ModelSelector
 
 CONFIG_PATH = Path(__file__).resolve().parent / "ProtocolVisionIV4" / "config" / "config.json"
 
@@ -35,9 +35,11 @@ def main() -> None:
 
     serial = config.get("serial_number")
     logging.info("Selecting model for serial %s", serial)
-    model = select_model_by_serial(serial)
+    selector = ModelSelector()
+    model = selector.select_model(serial)
     config.data["model_name"] = model
     logging.info("Selected model: %s", model)
+    selector.register_model(serial, model)
 
     for name in camera_mgr.names():
         logging.info("Connecting camera %s", name)
