@@ -46,6 +46,7 @@ def main() -> None:
         camera_mgr.connect(name)
         logging.info("Capturing image from %s", name)
         image = camera_mgr.capture_image(name)
+        ok = image is not None
 
         logging.info("Saving image")
         image_path = save_captured_image(
@@ -53,6 +54,7 @@ def main() -> None:
             config.get("image_output_path"),
             serial=serial,
             camera_type=camera_mgr.cameras[name].camera_type,
+            ok=ok,
         )
         logging.info("Image from %s saved to %s", name, image_path)
         camera_mgr.release(name)

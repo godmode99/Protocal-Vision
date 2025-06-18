@@ -15,8 +15,9 @@ The folder structure outlined in the Thai documentation shows the key modules of
 - `ai_processor.py` – optional AI/ML processing for images.
 - `serial_input.py` – handle serial codes from a scanner or manual input.
 - `logger.py` – handle logging and export (CSV/JSON).
-- `image_saver.py` – save captured images or placeholder logs with timestamped
-  filenames.
+- `image_saver.py` – save captured images with status-based filenames like
+  `SERIAL_OK_YYYYMMDD_HHMM.jpg` (or `SERIAL_NG_...`) and placeholder logs for
+  mock cameras.
 - `config/config.json` – runtime configuration loaded by `ConfigManager`. It now
   contains a `cameras` array so multiple cameras can be configured.
 - The configuration's `model_name` is automatically updated from the serial number.

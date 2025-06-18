@@ -87,11 +87,13 @@ class App:
         """Capture an image using the specified camera."""
         try:
             img = self.camera_mgr.capture_image(name)
+            ok = img is not None
             path = save_captured_image(
                 img,
                 self.config.get("image_output_path"),
                 serial=self.config.get("serial_number"),
                 camera_type=self.camera_mgr.cameras[name].camera_type,
+                ok=ok,
             )
             self.image_var.set(path)
             messagebox.showinfo("Capture", f"{name} image saved to {path}")
