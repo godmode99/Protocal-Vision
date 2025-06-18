@@ -21,6 +21,8 @@ The folder structure outlined in the Thai documentation shows the key modules of
 - `config/config.json` – runtime configuration loaded by `ConfigManager`. It now
   contains a `cameras` array so multiple cameras can be configured.
 - The configuration's `model_name` is automatically updated from the serial number.
+- Set `use_ai` to `true` in `config.json` to enable YOLOv5 inspection with
+  `ai_processor.process_image`.
 
 ## Setup and Usage
 1. Install Python 3.9 or newer.

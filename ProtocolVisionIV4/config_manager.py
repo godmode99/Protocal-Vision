@@ -23,6 +23,7 @@ class ConfigManager:
         "serial_number": str,
         "image_output_path": str,
         "ai_model_path": str,
+        "use_ai": bool,
         "log_path": str,
         "scanner_port": str,
         "scanner_baud": int,
