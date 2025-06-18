@@ -24,8 +24,9 @@ The folder structure outlined in the Thai documentation shows the key modules of
 ## Setup and Usage
 1. Install Python 3.9 or newer.
 2. Clone this repository.
-3. Run `python ProtocolVisionIV4/main.py` to launch the application.
-4. Captured images and logs will be saved in the `outputs/` directory.
+3. Install dependencies with `pip install -r requirements.txt`.
+4. Run `python ProtocolVisionIV4/main.py` to launch the application.
+5. Captured images and logs will be saved in the `outputs/` directory.
 
 ## Camera Manager Overview
 
@@ -34,4 +35,10 @@ The `CameraManager` automatically connects to the correct camera type based on
 * **USB** – uses OpenCV to access a webcam.
 * **IV2/IV3/IV4** – connects over a mock TCP socket and sends `TRIGGER`/`IMAGE_OK` commands.
 * **VS** – simulates an SDK interface and returns a mocked image string.
+
+## Serial Input
+
+`SerialInput` reads a barcode scanner via a COM/USB port and falls back to
+manual entry when no data is received. The Thai documentation notes that serial
+codes can come from a scanner or be typed by the user【F:เอกสารโครงการ.md†L32-L40】.
 
