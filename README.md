@@ -22,7 +22,11 @@ The folder structure outlined in the Thai documentation shows the key modules of
   contains a `cameras` array so multiple cameras can be configured.
 - The configuration's `model_name` is automatically updated from the serial number.
 - Set `use_ai` to `true` in `config.json` to enable YOLOv5 inspection with
-  `ai_processor.process_image`.
+`ai_processor.process_image`.
+
+## Logging and Integration
+
+The documentation describes a **Log & Exporter** stage that outputs CSV/JSON and forwards results via webhook or MQTT【F:เอกสารโครงการ.md†L91-L112】. The `Logger` module writes log entries to both `log.csv` and `log.jsonl` under `outputs/logs/` and exposes `send_webhook` and `publish_mqtt` helpers. Configure `webhook_url`, `mqtt_broker`, `mqtt_port`, and `mqtt_topic` in `config/config.json` to enable these integrations.
 
 ## Setup and Usage
 1. Install Python 3.9 or newer.

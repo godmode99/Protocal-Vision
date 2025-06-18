@@ -7,6 +7,10 @@
   "log_path": "outputs/logs/app.log",
   "scanner_port": "COM3",
   "scanner_baud": 9600,
+  "webhook_url": "",
+  "mqtt_broker": "localhost",
+  "mqtt_port": 1883,
+  "mqtt_topic": "protocol/vision",
   "cameras": [
     {
       "name": "Cam1",

@@ -6,6 +6,7 @@ from ProtocolVisionIV4.camera_manager import CameraManager
 from ProtocolVisionIV4.config_manager import ConfigManager
 from ProtocolVisionIV4.image_saver import save_captured_image
 from ProtocolVisionIV4.model_selector import ModelSelector
+from ProtocolVisionIV4.logger import Logger
 
 CONFIG_PATH = Path(__file__).resolve().parent / "ProtocolVisionIV4" / "config" / "config.json"
 
@@ -24,31 +25,35 @@ def main() -> None:
     logging.info("Loading configuration from %s", CONFIG_PATH)
     config = ConfigManager(CONFIG_PATH)
 
-    # add file logging once we know the log path
-    file_handler = logging.FileHandler(config.get("log_path"))
-    file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-    logging.getLogger().addHandler(file_handler)
+    logger = Logger(
+        config.get("log_path"),
+        webhook_url=config.get("webhook_url"),
+        mqtt_broker=config.get("mqtt_broker"),
+        mqtt_port=config.get("mqtt_port"),
+        mqtt_topic=config.get("mqtt_topic"),
+    )
+    logger.log("info", f"Configuration loaded from {CONFIG_PATH}")
 
     cameras_cfg = config.get("cameras")
-    logging.info("Initializing %d cameras", len(cameras_cfg))
+    logger.log("info", f"Initializing {len(cameras_cfg)} cameras")
     camera_mgr = CameraManager(cameras_cfg)
 
     serial = config.get("serial_number")
-    logging.info("Selecting model for serial %s", serial)
+    logger.log("info", f"Selecting model for serial {serial}")
     selector = ModelSelector()
     model = selector.select_model(serial)
     config.data["model_name"] = model
-    logging.info("Selected model: %s", model)
+    logger.log("info", f"Selected model: {model}")
     selector.register_model(serial, model)
 
     for name in camera_mgr.names():
-        logging.info("Connecting camera %s", name)
+        logger.log("info", f"Connecting camera {name}")
         camera_mgr.connect(name)
-        logging.info("Capturing image from %s", name)
+        logger.log("info", f"Capturing image from {name}")
         image = camera_mgr.capture_image(name)
         ok = image is not None
 
-        logging.info("Saving image")
+        logger.log("info", "Saving image")
         image_path = save_captured_image(
             image,
             config.get("image_output_path"),
@@ -56,9 +61,16 @@ def main() -> None:
             camera_type=camera_mgr.cameras[name].camera_type,
             ok=ok,
         )
-        logging.info("Image from %s saved to %s", name, image_path)
+        logger.log("info", f"Image from {name} saved to {image_path}")
+        result = {
+            "camera": name,
+            "image": image_path,
+            "ok": ok,
+        }
+        logger.send_webhook(result)
+        logger.publish_mqtt(result)
         camera_mgr.release(name)
-        logging.info("Camera %s released", name)
+        logger.log("info", f"Camera {name} released")
 
 
 if __name__ == "__main__":

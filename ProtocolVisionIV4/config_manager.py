@@ -27,6 +27,10 @@ class ConfigManager:
         "log_path": str,
         "scanner_port": str,
         "scanner_baud": int,
+        "webhook_url": str,
+        "mqtt_broker": str,
+        "mqtt_port": int,
+        "mqtt_topic": str,
         "cameras": list,
     }
 
@@ -69,6 +73,8 @@ class ConfigManager:
 
         if self.data.get("scanner_baud", 0) <= 0:
             raise ConfigError("'scanner_baud' must be a positive integer")
+        if self.data.get("mqtt_port", 0) <= 0:
+            raise ConfigError("'mqtt_port' must be a positive integer")
 
         cameras = self.data.get("cameras", [])
         if not isinstance(cameras, list):
