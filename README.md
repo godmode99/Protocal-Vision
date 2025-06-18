@@ -61,3 +61,8 @@ The `CameraManager` automatically connects to the correct camera type based on
 manual entry when no data is received. The Thai documentation notes that serial
 codes can come from a scanner or be typed by the user【F:เอกสารโครงการ.md†L32-L40】.
 
+## Additional Documentation
+
+For a step-by-step user guide in Thai, see **คู่มือการใช้งาน.md** in this
+repository.
+
