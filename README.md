@@ -28,6 +28,15 @@ The folder structure outlined in the Thai documentation shows the key modules of
 
 The documentation describes a **Log & Exporter** stage that outputs CSV/JSON and forwards results via webhook or MQTT【F:เอกสารโครงการ.md†L91-L112】. The `Logger` module writes log entries to both `log.csv` and `log.jsonl` under `outputs/logs/` and exposes `send_webhook` and `publish_mqtt` helpers. Configure `webhook_url`, `mqtt_broker`, `mqtt_port`, and `mqtt_topic` in `config/config.json` to enable these integrations.
 
+## Workflow Endpoints (n8n / Node-RED)
+
+The Thai documentation notes support for workflow tools such as n8n and Node-RED【F:เอกสารโครงการ.md†L66-L67】. Set `webhook_url` in `config/config.json` to the HTTP endpoint provided by your flow.
+
+1. **n8n** – add a *Webhook* node and copy the URL shown in the node details.
+2. **Node-RED** – create an *http in* node and deploy to obtain its endpoint.
+
+Each capture result is logged and then sent via `send_to_workflow`, which posts the JSON payload to this URL. Connection failures are logged and do not stop the application.
+
 ## Setup and Usage
 1. Install Python 3.9 or newer.
 2. Clone this repository.

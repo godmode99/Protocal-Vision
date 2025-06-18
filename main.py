@@ -7,6 +7,7 @@ from ProtocolVisionIV4.config_manager import ConfigManager
 from ProtocolVisionIV4.image_saver import save_captured_image
 from ProtocolVisionIV4.model_selector import ModelSelector
 from ProtocolVisionIV4.logger import Logger
+from ProtocolVisionIV4.workflow import send_to_workflow
 
 CONFIG_PATH = Path(__file__).resolve().parent / "ProtocolVisionIV4" / "config" / "config.json"
 
@@ -67,6 +68,7 @@ def main() -> None:
             "image": image_path,
             "ok": ok,
         }
+        send_to_workflow(result, config.get("webhook_url"))
         logger.send_webhook(result)
         logger.publish_mqtt(result)
         camera_mgr.release(name)
