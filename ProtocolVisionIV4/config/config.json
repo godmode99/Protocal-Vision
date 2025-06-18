@@ -1,43 +1,10 @@
 {
-  "camera": [
-    {
-      "name": "MainCam",
-      "type": "USB",
-      "device": 0,
-      "port": null,
-      "resolution": [1920, 1080]
-    }
-  ],
-  "model": {
-    "base_path": "models/",
-    "default": "model.onnx",
-    "serial_map": {}
-  },
-  "output": {
-    "image_dir": "outputs/images/",
-    "log_dir": "outputs/logs/",
-    "file_naming": "{serial}_{result}.jpg"
-  },
-  "ui": {
-    "theme": "dark",
-    "language": "en",
-    "port": 8000
-  },
-  "ai": {
-    "enabled": false,
-    "framework": "opencv",
-    "model_file": "models/model.onnx",
-    "threshold": 0.5
-  },
-  "log": {
-    "level": "info",
-    "export_csv": true,
-    "export_json": true
-  },
-  "integration": {
-    "webhook_url": "",
-    "mqtt_broker": "localhost",
-    "mqtt_port": 1883,
-    "mqtt_topic": "inspection/results"
-  }
+  "camera_type": "USB",
+  "model_name": "default_model",
+  "serial_number": "0000",
+  "image_output_path": "outputs/images",
+  "ai_model_path": "models/model.onnx",
+  "port": 8000,
+  "ip_address": "127.0.0.1",
+  "log_path": "outputs/logs/app.log"
 }

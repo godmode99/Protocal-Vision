@@ -15,7 +15,7 @@ The folder structure outlined in the Thai documentation shows the key modules of
 - `ai_processor.py` – optional AI/ML processing for images.
 - `serial_input.py` – handle serial codes from a scanner or manual input.
 - `logger.py` – handle logging and export (CSV/JSON).
-- `config/config.json` – camera and model configuration.
+- `config/config.json` – runtime configuration loaded by `ConfigManager`.
 
 ## Setup and Usage
 1. Install Python 3.9 or newer.
