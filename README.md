@@ -11,7 +11,7 @@ The folder structure outlined in the Thai documentation shows the key modules of
 `ProtocolVisionIV4/`【F:เอกสารโครงการ.md†L120-L131】:
 - `main.py` – entry point and user interface.
 - `camera_manager.py` – manage multiple camera connections.
-- `model_selector.py` – select and register models based on serial codes.
+- `model_selector.py` – auto-selects the correct model from a serial number.
 - `ai_processor.py` – optional AI/ML processing for images.
 - `serial_input.py` – handle serial codes from a scanner or manual input.
 - `logger.py` – handle logging and export (CSV/JSON).
