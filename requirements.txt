@@ -1,2 +1,4 @@
 pyserial
 ultralytics
+requests
+paho-mqtt
