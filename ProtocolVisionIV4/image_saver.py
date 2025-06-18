@@ -27,6 +27,7 @@ def save_captured_image(
     *,
     serial: str | None = None,
     camera_type: str | None = None,
+    ok: bool = True,
 ) -> str:
     """Save a captured image or placeholder file.
 
@@ -45,6 +46,8 @@ def save_captured_image(
         Override the serial number used in the file name.
     camera_type:
         Override the camera type used when saving.
+    ok:
+        ``True`` if the result was OK, ``False`` for NG.
 
     Returns
     -------
@@ -55,7 +58,8 @@ def save_captured_image(
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     serial = serial or _SERIAL
     camera_type = camera_type or _CAMERA_TYPE
-    base_name = f"{serial}_{timestamp}"
+    status = "OK" if ok else "NG"
+    base_name = f"{serial}_{status}_{timestamp}"
     out_dir = Path(output_path)
     out_dir.mkdir(parents=True, exist_ok=True)
 
