@@ -24,6 +24,8 @@ class ConfigManager:
         "image_output_path": str,
         "ai_model_path": str,
         "log_path": str,
+        "scanner_port": str,
+        "scanner_baud": int,
         "cameras": list,
     }
 
@@ -63,6 +65,9 @@ class ConfigManager:
                 raise ConfigError(
                     f"Field '{field}' must be of type {field_type.__name__}"
                 )
+
+        if self.data.get("scanner_baud", 0) <= 0:
+            raise ConfigError("'scanner_baud' must be a positive integer")
 
         cameras = self.data.get("cameras", [])
         if not isinstance(cameras, list):
