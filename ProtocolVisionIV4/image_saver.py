@@ -11,12 +11,15 @@ try:
 except Exception:  # pragma: no cover - optional dependency
     cv2 = None
 
+import os
+
 from .config_manager import ConfigManager
 from .ai_processor import AIProcessor
 
 # Load configuration once for default serial number and camera type. These
 # values can be overridden when calling :func:`save_captured_image`.
-_CONFIG_PATH = Path(__file__).resolve().parent / "config" / "config.json"
+_DEFAULT_CONFIG = Path(__file__).resolve().parent / "config" / "config.json"
+_CONFIG_PATH = Path(os.environ.get("CONFIG_PATH", _DEFAULT_CONFIG))
 _config = ConfigManager(_CONFIG_PATH)
 _SERIAL = _config.get("serial_number", "UNKNOWN")
 _CAMERA_TYPE = "USB"

@@ -6,6 +6,9 @@ from typing import Dict
 import sqlite3
 from datetime import datetime
 from pathlib import Path
+import os
+
+from .config_manager import ConfigManager
 
 
 MODEL_MAP: Dict[str, str] = {
@@ -15,7 +18,15 @@ MODEL_MAP: Dict[str, str] = {
 
 DEFAULT_MODEL = "default_model"
 
-DB_PATH = Path(__file__).resolve().parent / "outputs" / "model_registry.db"
+_DEFAULT_CONFIG = Path(__file__).resolve().parent / "config" / "config.json"
+_CONFIG_PATH = Path(os.environ.get("CONFIG_PATH", _DEFAULT_CONFIG))
+_CONFIG = ConfigManager(_CONFIG_PATH)
+DB_PATH = Path(
+    _CONFIG.get(
+        "model_registry_path",
+        Path(__file__).resolve().parent / "outputs" / "model_registry.db",
+    )
+)
 
 class ModelSelector:
     """Select a model based on the provided serial code."""

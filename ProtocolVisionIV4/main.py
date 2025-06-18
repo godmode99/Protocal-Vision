@@ -9,6 +9,9 @@ if __package__ in {None, ""}:
 
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import argparse
+import os
+
 import json
 from pathlib import Path
 from typing import Any
@@ -22,7 +25,8 @@ from ProtocolVisionIV4.image_saver import save_captured_image
 from ProtocolVisionIV4.model_selector import ModelSelector
 
 
-CONFIG_PATH = Path(__file__).resolve().parent / "config" / "config.json"
+DEFAULT_CONFIG = Path(__file__).resolve().parent / "config" / "config.json"
+CONFIG_PATH = Path(os.environ.get("CONFIG_PATH", DEFAULT_CONFIG))
 
 
 class App:
@@ -130,6 +134,15 @@ class App:
 
 def main() -> None:
     """Entry point for launching the Tkinter application."""
+    global CONFIG_PATH
+    parser = argparse.ArgumentParser(description="Protocol Vision IV4 UI")
+    parser.add_argument(
+        "--config", default=str(CONFIG_PATH), help="Path to configuration file"
+    )
+    args = parser.parse_args()
+    CONFIG_PATH = Path(args.config)
+    os.environ["CONFIG_PATH"] = str(CONFIG_PATH)
+
     root = tk.Tk()
     App(root)
     root.mainloop()
