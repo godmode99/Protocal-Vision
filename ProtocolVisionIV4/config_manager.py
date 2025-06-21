@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict
 
-from .model_selector import select_model_by_serial
+from .utils import select_model_by_serial
 
 
 class ConfigError(Exception):
