@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+import json
+import configparser
 
 try:
     import cv2  # type: ignore
@@ -20,8 +22,28 @@ from .ai_processor import AIProcessor
 # values can be overridden when calling :func:`save_captured_image`.
 _DEFAULT_CONFIG = Path(__file__).resolve().parent / "config" / "config.json"
 _CONFIG_PATH = Path(os.environ.get("CONFIG_PATH", _DEFAULT_CONFIG))
-_config = ConfigManager(_CONFIG_PATH)
-_SERIAL = _config.get("serial_number", "UNKNOWN")
+_config: Any = ConfigManager(_CONFIG_PATH)
+
+
+def _safe_get(cfg: Any, key: str, default: Any | None = None) -> Any:
+    """Return a config value after validating the config object."""
+    if isinstance(cfg, Path):
+        with cfg.open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+        return data.get(key, default)
+    if isinstance(cfg, configparser.ConfigParser):
+        path = getattr(cfg, "filename", None) or getattr(cfg, "_config_path", None)
+        if path:
+            cfg.read(path)
+        return cfg.get(cfg.default_section or "DEFAULT", key, fallback=default)
+    if isinstance(cfg, ConfigManager):
+        return cfg.get(key, default)
+    if isinstance(cfg, dict):
+        return cfg.get(key, default)
+    raise TypeError("_CONFIG must be Path, ConfigParser, dict, or ConfigManager")
+
+
+_SERIAL = _safe_get(_config, "serial_number", "UNKNOWN")
 _CAMERA_TYPE = "USB"
 _AI_PROCESSOR: AIProcessor | None = None
 
@@ -67,11 +89,11 @@ def save_captured_image(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     if camera_type == "USB" and cv2 is not None:
-        use_ai = _config.get("use_ai", False)
+        use_ai = _safe_get(_config, "use_ai", False)
         if use_ai:
             global _AI_PROCESSOR
             if _AI_PROCESSOR is None:
-                _AI_PROCESSOR = AIProcessor(_config.get("ai_model_path"))
+                _AI_PROCESSOR = AIProcessor(_safe_get(_config, "ai_model_path"))
             temp_path = out_dir / f"{serial}_TMP_{timestamp}.jpg"
             cv2.imwrite(str(temp_path), image)
             ok = _AI_PROCESSOR.process_image(str(temp_path))
